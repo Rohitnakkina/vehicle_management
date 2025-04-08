@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prime Auto Service - Admin Login</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .brand-header {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .login-card {
+            width: 380px;
+            padding: 25px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .form-group label {
+            font-weight: bold;
+            color: #34495e;
+        }
+        .form-control {
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .btn-login, .btn-register {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            color: white;
+            border-radius: 6px;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .btn-login {
+            background-color: #2980b9;
+            border: none;
+        }
+        .btn-login:hover {
+            background-color: #1f6691;
+        }
+        .btn-register {
+            background-color: #27ae60;
+            border: none;
+        }
+        .btn-register:hover {
+            background-color: #1e8449;
+        }
+        .alert {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="brand-header">Prime Auto Service</div>
+
+    <div class="login-card">
+        <h2>Admin Login</h2>
+        <form th:action="@{/admin-login}" method="post">
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Email</label>
+                <div class="col-sm-9">
+                    <input type="email" name="username" class="form-control" required>
+                </div>
+            </div>
+            <br>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Password</label>
+                <div class="col-sm-9">
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-login">Sign In</button>
+        </form>
+
+        <a th:href="@{/admin-register}" class="btn btn-register">Register (Admin)</a>
+
+        <div th:if="${param.error}" class="alert alert-danger">
+    		<span th:if="${param.error}">Admin is already registered! Please login.</span>
+   			<span th:if="${param.error }">Invalid email or password.</span> 
+		</div>
+		<div th:if="${param.registered}" class="alert alert-success">
+ 		   Registration successful! Please login.
+		</div>
+    </div>
+
+</body>
+</html>

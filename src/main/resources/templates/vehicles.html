@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Vehicles</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* General Styles */
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            display: flex;
+            color: white;
+            margin: 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #2c3e50;
+            padding-top: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: white;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #1a252f;
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #e74c3c;
+            width: 80%;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Main Content */
+        .content {
+            margin-left: 270px;
+            padding: 30px;
+            width: 100%;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: black;
+            margin-bottom: 20px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .table th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #217dbb;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-secondary {
+            background-color: #7f8c8d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #636e72;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/add-customer}">Add Customer</a>
+        <a th:href="@{/admin/vehicles}">Manage Vehicles</a>
+        <a th:href="@{/admin/service-advisors}">Manage Service Advisors</a>
+        <a th:href="@{/admin-login}" class="logout-btn">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h1 class="text-center">Manage Vehicles</h1>
+
+        <!-- Register / Edit Vehicle -->
+        <div class="card">
+            <h3 th:text="${vehicle.id != null} ? 'Edit Vehicle' : 'Register New Vehicle'"></h3>
+            <form th:action="@{/admin/vehicles/save}" th:object="${vehicle}" method="post">
+                <input type="hidden" th:field="*{id}"> <!-- Store ID for Edit -->
+
+                <div class="form-group">
+                    <label>Registration Number</label>
+                    <input type="text" th:field="*{registrationNumber}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Model</label>
+                    <input type="text" th:field="*{model}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Customer</label>
+                    <select th:field="*{customer.id}" required>
+                        <option value="">Select Customer</option>
+                        <option th:each="customer : ${customers}" th:value="${customer.id}" th:text="${customer.name}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Last Service Date</label>
+                    <input type="date" th:field="*{lastServiceDate}">
+                </div>
+
+                <button type="submit" class="btn btn-primary" th:text="${vehicle.id != null} ? 'Update Vehicle' : 'Save Vehicle'"></button>
+            </form>
+        </div>
+
+        <!-- Vehicle List -->
+        <div class="card">
+            <h3>Vehicle List</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Reg. Number</th>
+                        <th>Model</th>
+                        <th>Customer Name</th>
+                        <th>Last Service</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="vehicle : ${vehicles}">
+                        <td th:text="${vehicle.id}"></td>
+                        <td th:text="${vehicle.registrationNumber}"></td>
+                        <td th:text="${vehicle.model}"></td>
+                        <td th:text="${vehicle.customer.name}"></td>
+                        <td th:text="${vehicle.lastServiceDate}"></td>
+                        <td>
+                            <a th:href="@{/admin/vehicles/edit/{id}(id=${vehicle.id})}" class="btn btn-secondary">Edit</a>
+                            <a th:href="@{/admin/vehicles/delete/{id}(id=${vehicle.id})}" class="btn btn-danger">Delete</a>
+                        
+                        <form th:action="@{/admin/vehicles/schedule/{id}(id=${vehicle.id})}" method="post" class="d-inline">
+                                <select name="advisorId" class="form-control d-inline w-auto">
+                                    <option th:each="advisor : ${advisors}"
+                                            th:value="${advisor.id}"
+                                            th:text="${advisor.name}"></option>
+                                </select>
+                                <select name="issueType" class="form-control d-inline w-auto">
+                                    <option value="Oil Change">Oil Change</option>
+                                    <option value="Tire Rotation">Tire Rotation</option>
+                                    <option value="Brake Repair">Brake Repair</option>
+                                </select>
+ 
+                                <button type="submit" 
+                                	class="btn btn-primary">Move to Service</button>
+                            </form>
+                        
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(vehicles)}">
+					<td colspan="8">No Vehicles to display</td>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            <a th:href="@{/admin/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+</body>
+</html>
