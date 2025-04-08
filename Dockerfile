@@ -1,14 +1,22 @@
-# Use a base Java 21 image
-FROM eclipse-temurin:21-jdk-alpine
+# Stage 1: Build the application
+FROM eclipse-temurin:21-jdk-alpine AS build
 
-# Set working directory inside container
 WORKDIR /app
 
-# Copy the jar file into the container
-COPY target/PrimeAutomobilesApplication-0.0.1-SNAPSHOT.jar app.jar
+# Copy everything to the image
+COPY . .
 
-# Expose the port your Spring Boot app runs on (as per application.properties)
+# Build the application using Maven wrapper
+RUN ./mvnw clean package -DskipTests
+
+# Stage 2: Run the application
+FROM eclipse-temurin:21-jdk-alpine
+
+WORKDIR /app
+
+# Copy the built jar from the previous stage
+COPY --from=build /app/target/PrimeAutomobilesApplication-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 9090
 
-# Start the Spring Boot app
 ENTRYPOINT ["java", "-jar", "app.jar"]
